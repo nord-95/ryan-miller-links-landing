@@ -121,6 +121,7 @@
       opacity: 0;
       transform: translateY(20px);
       animation: fadeInUp 0.8s ease forwards;
+      position: relative;
     }
 
     .platform-tile:hover {
@@ -131,6 +132,34 @@
     .platform-tile img {
       max-width: 100px;
       height: auto;
+    }
+
+    .new-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ff0000;
+      color: #ffffff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.5rem;
+      text-transform: uppercase;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .new {
+      animation: zoomInOut 1.5s ease-in-out infinite;
+    }
+
+    @keyframes zoomInOut {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
     }
 
     .bio-section {
@@ -244,6 +273,7 @@
       </a>
       <a href="https://wa.me/447568994928" target="_blank" class="platform-tile">
         <img src="https://services.linkfire.com/logo_text-me_onlight.svg" alt="Text Me">
+        <span class="new-badge new">NEW</span>
       </a>
     </div>
 
