@@ -152,6 +152,7 @@
       display: none;
       opacity: 0;
       transform: translateY(-10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
     }
 
     .bio-full.show {
@@ -240,13 +241,21 @@
       
       if (bioFull.classList.contains('show')) {
         // Closing
-        bioFull.classList.remove('show');
-        readMore.textContent = 'Read More';
-        ellipsis.style.display = 'inline';
+        bioFull.style.opacity = '0';
+        bioFull.style.transform = 'translateY(-10px)';
+        // Wait for animation to complete before hiding
+        setTimeout(() => {
+          bioFull.classList.remove('show');
+          bioFull.style.display = 'none';
+          readMore.textContent = 'Read More';
+          ellipsis.style.display = 'inline';
+        }, 300);
       } else {
         // Opening
         ellipsis.style.display = 'none';
         bioFull.style.display = 'inline';
+        bioFull.style.opacity = '0';
+        bioFull.style.transform = 'translateY(-10px)';
         // Force reflow to ensure animation triggers
         void bioFull.offsetWidth;
         bioFull.classList.add('show');
