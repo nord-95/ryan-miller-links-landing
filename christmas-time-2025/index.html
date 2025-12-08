@@ -326,6 +326,42 @@
       display: none;
     }
 
+    .presave-success {
+      display: none;
+      text-align: center;
+      color: var(--text-light);
+      font-size: 1.1rem;
+      line-height: 1.8;
+      margin: 2rem 0;
+      padding: 2rem;
+      background: rgba(29, 185, 84, 0.1);
+      border: 2px solid rgba(29, 185, 84, 0.3);
+      border-radius: 1rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .presave-success.show {
+      display: block;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s ease forwards;
+    }
+
+    .presave-success h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: var(--accent);
+    }
+
+    .presave-success p {
+      font-size: 1rem;
+      color: var(--text-light);
+      margin: 0.5rem 0;
+    }
+
     .platform-divider {
       grid-column: 1 / -1;
       height: 1px;
@@ -687,7 +723,7 @@
     </div>
 
     <div class="newsletter-instructions" id="newsletter-instructions">
-      <p>Sign up with your email to unlock access to all streaming platforms and download links.</p>
+      <p>Presave Christmas Time: One More Night and be the first to know when it's available to stream.</p>
     </div>
 
     <div class="newsletter-section">
@@ -715,6 +751,12 @@
     </div>
 
     <div class="newsletter-divider"></div>
+
+    <div class="presave-success" id="presave-success">
+      <h2>You are all set.</h2>
+      <p>We will email you the moment Christmas Time: One More Night is available to stream.</p>
+      <p><strong>Happy Holidays!</strong></p>
+    </div>
 
    <!-- <div class="bio-section">
       <p class="bio-text">
@@ -898,7 +940,7 @@
             if (data.result === 'success') {
               // Show success message
               if (successResponse) {
-                successResponse.textContent = 'Thank you for subscribing!';
+                successResponse.textContent = 'Presave confirmed!';
                 successResponse.style.display = 'block';
               }
               
@@ -907,13 +949,13 @@
                 window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, 'newsletter_emails'), {
                   email: email,
                   timestamp: window.firebaseServerTimestamp(),
-                  source: 'christmas-time-2025'
+                  source: 'presave-christmas-time-2025'
                 }).catch(error => {
                   console.error('Error saving to Firebase:', error);
                 });
               }
               
-              // Mark as signed up and show platforms
+              // Mark as signed up and show success message
               localStorage.setItem('newsletter_signed_up', 'true');
               showPlatforms();
               
@@ -939,15 +981,24 @@
       const platforms = document.querySelector('.platforms');
       const instructions = document.getElementById('newsletter-instructions');
       const newsletterSection = document.querySelector('.newsletter-section');
+      const presaveSuccess = document.getElementById('presave-success');
       
-      if (platforms) {
-        platforms.classList.add('show');
-      }
+      // Hide newsletter form and instructions
       if (instructions) {
         instructions.classList.add('hide');
       }
       if (newsletterSection) {
         newsletterSection.style.display = 'none';
+      }
+      
+      // Show success message instead of platforms
+      if (presaveSuccess) {
+        presaveSuccess.classList.add('show');
+      }
+      
+      // Keep platforms hidden for presave page
+      if (platforms) {
+        platforms.style.display = 'none';
       }
     }
     
