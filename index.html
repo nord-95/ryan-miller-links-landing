@@ -34,11 +34,22 @@
   <meta name="twitter:description" content="Connect with Ryan Miller: Music, Socials, Videos, and more.">
   <meta name="twitter:image" content="https://ryanmiller.one/meta-Ryan-Miller-2025-06.jpg">
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6YWMGG1FL"></script>
+  <!-- Google Consent Mode -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
+    
+    // Set default consent state (denied by default for GDPR compliance)
+    gtag('consent', 'default', {
+      'analytics_storage': 'denied',
+      'ad_storage': 'denied',
+      'wait_for_update': 500,
+    });
+  </script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V6YWMGG1FL"></script>
+  <script>
     gtag('js', new Date());
     gtag('config', 'G-V6YWMGG1FL');
   </script>
@@ -244,6 +255,107 @@
         transform: translateY(0);
       }
     }
+
+    /* Consent Banner Styles */
+    .consent-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(14, 14, 14, 0.98);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+      z-index: 10000;
+      display: none;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .consent-banner.show {
+      display: block;
+      animation: slideUp 0.4s ease forwards;
+    }
+
+    .consent-banner.hide {
+      animation: slideDown 0.4s ease forwards;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(100%);
+      }
+    }
+
+    .consent-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .consent-text {
+      flex: 1;
+      min-width: 250px;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .consent-text a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .consent-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .consent-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .consent-btn-accept {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .consent-btn-accept:hover {
+      background: #1ed760;
+      transform: translateY(-2px);
+    }
+
+    .consent-btn-decline {
+      background: transparent;
+      color: var(--text-light);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .consent-btn-decline:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
   </style>
 </head>
 <body>
@@ -323,6 +435,71 @@
         readMore.textContent = 'Read Less';
       }
     }
+
+    // Consent Banner Functionality
+    (function() {
+      // Check if consent has already been given
+      const consentGiven = localStorage.getItem('ga_consent');
+      
+      if (!consentGiven) {
+        // Show consent banner
+        const banner = document.getElementById('consent-banner');
+        if (banner) {
+          banner.classList.add('show');
+        }
+      } else if (consentGiven === 'granted') {
+        // User previously granted consent
+        gtag('consent', 'update', {
+          'analytics_storage': 'granted',
+          'ad_storage': 'granted'
+        });
+      }
+
+      // Handle consent acceptance
+      window.acceptConsent = function() {
+        gtag('consent', 'update', {
+          'analytics_storage': 'granted',
+          'ad_storage': 'granted'
+        });
+        localStorage.setItem('ga_consent', 'granted');
+        hideBanner();
+      };
+
+      // Handle consent decline
+      window.declineConsent = function() {
+        gtag('consent', 'update', {
+          'analytics_storage': 'denied',
+          'ad_storage': 'denied'
+        });
+        localStorage.setItem('ga_consent', 'denied');
+        hideBanner();
+      };
+
+      // Hide banner with animation
+      function hideBanner() {
+        const banner = document.getElementById('consent-banner');
+        if (banner) {
+          banner.classList.remove('show');
+          banner.classList.add('hide');
+          setTimeout(() => {
+            banner.style.display = 'none';
+          }, 400);
+        }
+      }
+    })();
   </script>
+
+  <!-- Consent Banner -->
+  <div id="consent-banner" class="consent-banner">
+    <div class="consent-content">
+      <div class="consent-text">
+        We use cookies and similar technologies to analyze site usage and improve your experience. By clicking "Accept", you consent to our use of analytics cookies. <a href="#" onclick="event.preventDefault(); alert('Privacy policy coming soon.');">Learn more</a>
+      </div>
+      <div class="consent-buttons">
+        <button class="consent-btn consent-btn-decline" onclick="declineConsent()">Decline</button>
+        <button class="consent-btn consent-btn-accept" onclick="acceptConsent()">Accept</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
