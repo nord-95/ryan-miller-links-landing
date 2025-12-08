@@ -801,45 +801,92 @@
         showPlatforms();
       }
       
-      // Listen for Mailchimp form success
+      // Handle form submission with AJAX
       const form = document.getElementById('mc-embedded-subscribe-form');
       if (form) {
         form.addEventListener('submit', function(e) {
-          // Monitor for success response
-          const checkSuccess = setInterval(function() {
-            const successResponse = document.getElementById('mce-success-response');
-            if (successResponse && successResponse.style.display !== 'none' && successResponse.textContent.trim() !== '') {
-              clearInterval(checkSuccess);
+          e.preventDefault();
+          
+          const emailInput = document.getElementById('mce-EMAIL');
+          const email = emailInput.value.trim();
+          const errorResponse = document.getElementById('mce-error-response');
+          const successResponse = document.getElementById('mce-success-response');
+          
+          if (!email || !email.includes('@')) {
+            if (errorResponse) {
+              errorResponse.textContent = 'Please enter a valid email address.';
+              errorResponse.style.display = 'block';
+            }
+            return;
+          }
+          
+          // Hide error message
+          if (errorResponse) {
+            errorResponse.style.display = 'none';
+          }
+          
+          // Disable submit button
+          const submitBtn = document.getElementById('mc-embedded-subscribe');
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.value = 'Subscribing...';
+          }
+          
+          // Store email locally (with basic encoding)
+          const encodedEmail = btoa(email).split('').reverse().join('');
+          const storedEmails = JSON.parse(localStorage.getItem('newsletter_emails') || '[]');
+          if (!storedEmails.includes(encodedEmail)) {
+            storedEmails.push(encodedEmail);
+            localStorage.setItem('newsletter_emails', JSON.stringify(storedEmails));
+          }
+          
+          // Submit to Mailchimp via JSONP
+          const formData = new FormData(form);
+          const params = new URLSearchParams();
+          params.append('EMAIL', email);
+          params.append('tags', '1960777');
+          params.append('b_3e07b07e47945e180c24bb09d_5a31726d25', '');
+          params.append('subscribe', 'Subscribe');
+          
+          // Use JSONP to avoid CORS issues
+          const script = document.createElement('script');
+          const callbackName = 'mailchimpCallback_' + Date.now();
+          
+          window[callbackName] = function(data) {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.value = 'Subscribe';
+            }
+            
+            if (data.result === 'success') {
+              // Show success message
+              if (successResponse) {
+                successResponse.textContent = 'Thank you for subscribing!';
+                successResponse.style.display = 'block';
+              }
+              
+              // Mark as signed up and show platforms
               localStorage.setItem('newsletter_signed_up', 'true');
               showPlatforms();
+              
+              // Clear form
+              emailInput.value = '';
+            } else {
+              // Show error message
+              if (errorResponse) {
+                errorResponse.textContent = data.msg || 'An error occurred. Please try again.';
+                errorResponse.style.display = 'block';
+              }
             }
-          }, 500);
+          };
           
-          // Stop checking after 10 seconds
-          setTimeout(function() {
-            clearInterval(checkSuccess);
-          }, 10000);
+          const url = 'https://iamryanmiller.us2.list-manage.com/subscribe/post-json?u=3e07b07e47945e180c24bb09d&id=5a31726d25&' + params.toString() + '&c=' + callbackName;
+          script.src = url;
+          document.body.appendChild(script);
         });
-      }
-      
-      // Also listen for Mailchimp's callback (if available)
-      window.showMailchimpSuccess = function() {
-        localStorage.setItem('newsletter_signed_up', 'true');
-        showPlatforms();
-      };
-      
-      // Monitor for success response visibility changes
-      const observer = new MutationObserver(function(mutations) {
-        const successResponse = document.getElementById('mce-success-response');
-        if (successResponse && successResponse.style.display !== 'none' && successResponse.textContent.trim() !== '') {
-          localStorage.setItem('newsletter_signed_up', 'true');
-          showPlatforms();
-        }
-      });
-      
-      const successResponse = document.getElementById('mce-success-response');
-      if (successResponse) {
-        observer.observe(successResponse, { attributes: true, childList: true, subtree: true });
       }
     });
     
