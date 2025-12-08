@@ -296,11 +296,34 @@
     }
 
     .platforms {
-      display: grid;
+      display: none;
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 1.5rem;
       width: 100%;
       max-width: 800px;
+    }
+
+    .platforms.show {
+      display: grid;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s ease forwards;
+    }
+
+    .newsletter-instructions {
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s ease forwards;
+      animation-delay: 0.4s;
+    }
+
+    .newsletter-instructions.hide {
+      display: none;
     }
 
     .platform-divider {
@@ -633,6 +656,10 @@
       <p class="sub-title">The Anniversary Edition</p>
     </div>
 
+    <div class="newsletter-instructions" id="newsletter-instructions">
+      <p>Sign up with your email to unlock access to all streaming platforms and download links.</p>
+    </div>
+
     <div class="newsletter-section">
       <div id="mc_embed_shell">
         <div id="mc_embed_signup">
@@ -768,7 +795,69 @@
     // Start neon flicker effect after initial animation completes (0.2s delay + 0.8s duration = 1.0s)
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(neonFlicker, 1000);
+      
+      // Check if user has already signed up
+      if (localStorage.getItem('newsletter_signed_up') === 'true') {
+        showPlatforms();
+      }
+      
+      // Listen for Mailchimp form success
+      const form = document.getElementById('mc-embedded-subscribe-form');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          // Monitor for success response
+          const checkSuccess = setInterval(function() {
+            const successResponse = document.getElementById('mce-success-response');
+            if (successResponse && successResponse.style.display !== 'none' && successResponse.textContent.trim() !== '') {
+              clearInterval(checkSuccess);
+              localStorage.setItem('newsletter_signed_up', 'true');
+              showPlatforms();
+            }
+          }, 500);
+          
+          // Stop checking after 10 seconds
+          setTimeout(function() {
+            clearInterval(checkSuccess);
+          }, 10000);
+        });
+      }
+      
+      // Also listen for Mailchimp's callback (if available)
+      window.showMailchimpSuccess = function() {
+        localStorage.setItem('newsletter_signed_up', 'true');
+        showPlatforms();
+      };
+      
+      // Monitor for success response visibility changes
+      const observer = new MutationObserver(function(mutations) {
+        const successResponse = document.getElementById('mce-success-response');
+        if (successResponse && successResponse.style.display !== 'none' && successResponse.textContent.trim() !== '') {
+          localStorage.setItem('newsletter_signed_up', 'true');
+          showPlatforms();
+        }
+      });
+      
+      const successResponse = document.getElementById('mce-success-response');
+      if (successResponse) {
+        observer.observe(successResponse, { attributes: true, childList: true, subtree: true });
+      }
     });
+    
+    function showPlatforms() {
+      const platforms = document.querySelector('.platforms');
+      const instructions = document.getElementById('newsletter-instructions');
+      const newsletterSection = document.querySelector('.newsletter-section');
+      
+      if (platforms) {
+        platforms.classList.add('show');
+      }
+      if (instructions) {
+        instructions.classList.add('hide');
+      }
+      if (newsletterSection) {
+        newsletterSection.style.display = 'none';
+      }
+    }
   </script>
 </body>
 </html>
