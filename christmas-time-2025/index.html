@@ -643,6 +643,36 @@
   </style>
 </head>
 <body>
+  <!-- Firebase Initialization -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAdUAAqKfLMytbOPyQRAVxOQlRlV-SNiec",
+      authDomain: "ryan-miller-587f2.firebaseapp.com",
+      projectId: "ryan-miller-587f2",
+      storageBucket: "ryan-miller-587f2.firebasestorage.app",
+      messagingSenderId: "878202031018",
+      appId: "1:878202031018:web:31d5dbc4143d9b892ef9d3",
+      measurementId: "G-9E4BWL5J32"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+
+    // Make Firebase functions available globally
+    window.firebaseApp = app;
+    window.firebaseDb = db;
+    window.firebaseAddDoc = addDoc;
+    window.firebaseCollection = collection;
+    window.firebaseServerTimestamp = serverTimestamp;
+  </script>
   <div class="photo-container">
     <img src="Christmas-Time-One-More-Night.png" alt="Ryan Miller - Christmas Time" class="album-art" id="album-art-mobile">
   </div>
@@ -804,7 +834,7 @@
       // Handle form submission with AJAX
       const form = document.getElementById('mc-embedded-subscribe-form');
       if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
           e.preventDefault();
           
           const emailInput = document.getElementById('mce-EMAIL');
@@ -832,7 +862,7 @@
             submitBtn.value = 'Subscribing...';
           }
           
-          // Store email in localStorage
+          // Store email in localStorage (backup)
           const storedEmails = JSON.parse(localStorage.getItem('newsletter_emails') || '[]');
           const emailExists = storedEmails.some(e => e.email === email);
           
@@ -872,13 +902,20 @@
                 successResponse.style.display = 'block';
               }
               
+              // Save email to Firebase Firestore
+              if (window.firebaseDb && window.firebaseAddDoc && window.firebaseCollection && window.firebaseServerTimestamp) {
+                window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, 'newsletter_emails'), {
+                  email: email,
+                  timestamp: window.firebaseServerTimestamp(),
+                  source: 'christmas-time-2025'
+                }).catch(error => {
+                  console.error('Error saving to Firebase:', error);
+                });
+              }
+              
               // Mark as signed up and show platforms
               localStorage.setItem('newsletter_signed_up', 'true');
               showPlatforms();
-              
-              // Save emails to file
-              const storedEmails = JSON.parse(localStorage.getItem('newsletter_emails') || '[]');
-              saveEmailsToFile(storedEmails);
               
               // Clear form
               emailInput.value = '';
@@ -914,37 +951,6 @@
       }
     }
     
-    function saveEmailsToFile(emails) {
-      const data = {
-        emails: emails,
-        lastUpdated: new Date().toISOString()
-      };
-      
-      const jsonString = JSON.stringify(data, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      
-      // Download the file (save to christmas-time-2025 folder manually)
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'emails.json';
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      // Also try to save via API endpoint (for server-side storage if needed)
-      fetch('/api/save-emails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonString
-      }).catch(() => {
-        // API endpoint not available, file downloaded instead
-      });
-    }
   </script>
 </body>
 </html>
