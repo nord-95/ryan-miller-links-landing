@@ -832,11 +832,15 @@
             submitBtn.value = 'Subscribing...';
           }
           
-          // Store email locally (with basic encoding)
-          const encodedEmail = btoa(email).split('').reverse().join('');
+          // Store email in localStorage
           const storedEmails = JSON.parse(localStorage.getItem('newsletter_emails') || '[]');
-          if (!storedEmails.includes(encodedEmail)) {
-            storedEmails.push(encodedEmail);
+          const emailExists = storedEmails.some(e => e.email === email);
+          
+          if (!emailExists) {
+            storedEmails.push({
+              email: email,
+              timestamp: new Date().toISOString()
+            });
             localStorage.setItem('newsletter_emails', JSON.stringify(storedEmails));
           }
           
@@ -872,6 +876,10 @@
               localStorage.setItem('newsletter_signed_up', 'true');
               showPlatforms();
               
+              // Save emails to file
+              const storedEmails = JSON.parse(localStorage.getItem('newsletter_emails') || '[]');
+              saveEmailsToFile(storedEmails);
+              
               // Clear form
               emailInput.value = '';
             } else {
@@ -904,6 +912,38 @@
       if (newsletterSection) {
         newsletterSection.style.display = 'none';
       }
+    }
+    
+    function saveEmailsToFile(emails) {
+      const data = {
+        emails: emails,
+        lastUpdated: new Date().toISOString()
+      };
+      
+      const jsonString = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      // Download the file (save to christmas-time-2025 folder manually)
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'emails.json';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      // Also try to save via API endpoint (for server-side storage if needed)
+      fetch('/api/save-emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonString
+      }).catch(() => {
+        // API endpoint not available, file downloaded instead
+      });
     }
   </script>
 </body>
