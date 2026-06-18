@@ -172,7 +172,7 @@
       align-items: center;
     }
 
-    .newsletter-form #mc_embed_signup_scroll {
+    .newsletter-form .form-row {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
@@ -181,21 +181,24 @@
       align-items: flex-start;
     }
 
-    .newsletter-form #mce-responses {
+    .newsletter-form .form-message {
       flex-basis: 100%;
       order: 3;
+      text-align: center;
+      margin-top: 1rem;
     }
 
-    .newsletter-form .mc-field-group {
+    .newsletter-form .field-group {
       order: 1;
+      flex: 1;
     }
 
-    .newsletter-form .clear {
+    .newsletter-form .submit-group {
       order: 2;
+      flex-shrink: 0;
     }
 
-    .newsletter-form input[type="email"],
-    .newsletter-form #mce-EMAIL {
+    .newsletter-form input[type="email"] {
       width: 100%;
       padding: 1rem;
       border: 2px solid rgba(241, 241, 241, 0.2);
@@ -207,21 +210,20 @@
       transition: all 0.3s ease;
     }
 
-    .newsletter-form input[type="email"]::placeholder,
-    .newsletter-form #mce-EMAIL::placeholder {
+    .newsletter-form input[type="email"]::placeholder {
       color: rgba(241, 241, 241, 0.5);
     }
 
-    .newsletter-form input[type="email"]:focus,
-    .newsletter-form #mce-EMAIL:focus {
+    .newsletter-form input[type="email"]:focus {
       outline: none;
       border-color: var(--accent);
       background: rgba(253, 252, 252, 0.15);
     }
 
-    .newsletter-form input[type="submit"],
-    .newsletter-form #mc-embedded-subscribe {
-      width: 100%;
+    .newsletter-form input[type="submit"] {
+      width: auto;
+      min-width: 150px;
+      white-space: nowrap;
       padding: 1rem 2rem;
       background: var(--accent);
       color: #ffffff;
@@ -234,57 +236,32 @@
       transition: all 0.3s ease;
     }
 
-    .newsletter-form input[type="submit"]:hover,
-    .newsletter-form #mc-embedded-subscribe:hover {
+    .newsletter-form input[type="submit"]:hover {
       background: #1ed760;
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(29, 185, 84, 0.3);
     }
 
-    .newsletter-form .mc-field-group {
-      flex: 1;
+    .newsletter-form input[type="submit"]:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
     }
 
-    .newsletter-form .clear {
-      flex-shrink: 0;
-    }
-
-    .newsletter-form input[type="email"],
-    .newsletter-form #mce-EMAIL {
-      width: 100%;
-    }
-
-    .newsletter-form input[type="submit"],
-    .newsletter-form #mc-embedded-subscribe {
-      width: auto;
-      min-width: 150px;
-      white-space: nowrap;
-    }
-
-    .newsletter-form #mce-responses {
-      text-align: center;
-      margin-top: 1rem;
-    }
-
-    .newsletter-form #mce-error-response,
-    .newsletter-form #mce-success-response {
+    .form-error {
       padding: 0.75rem;
       border-radius: 0.5rem;
       font-size: 0.9rem;
-    }
-
-    .newsletter-form #mce-error-response {
       background: rgba(255, 0, 0, 0.2);
       color: #ff6b6b;
     }
 
-    .newsletter-form #mce-success-response {
+    .form-success {
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
       background: rgba(29, 185, 84, 0.2);
       color: #1ed760;
-    }
-
-    #mc_embed_signup_scroll {
-      width: 100%;
     }
 
     .newsletter-divider {
@@ -566,15 +543,14 @@
         margin-bottom: 1rem;
       }
 
-      .newsletter-form .clear {
+      .newsletter-form .submit-group {
         position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
       }
 
-      .newsletter-form input[type="submit"],
-      .newsletter-form #mc-embedded-subscribe {
+      .newsletter-form input[type="submit"] {
         width: 50px;
         height: 50px;
         padding: 0;
@@ -597,10 +573,7 @@
 
       .newsletter-form input[type="submit"]:hover,
       .newsletter-form input[type="submit"]:active,
-      .newsletter-form input[type="submit"]:focus,
-      .newsletter-form #mc-embedded-subscribe:hover,
-      .newsletter-form #mc-embedded-subscribe:active,
-      .newsletter-form #mc-embedded-subscribe:focus {
+      .newsletter-form input[type="submit"]:focus {
         transform: none;
         box-shadow: none;
         background: #ffffff;
@@ -635,27 +608,17 @@
     </div>
 
     <div class="newsletter-section">
-      <div id="mc_embed_shell">
-        <div id="mc_embed_signup">
-          <form action="https://iamryanmiller.us2.list-manage.com/subscribe/post?u=3e07b07e47945e180c24bb09d&amp;id=5a31726d25&amp;f_id=005d93e3f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate newsletter-form" target="_self" novalidate="">
-            <div id="mc_embed_signup_scroll">
-              <div class="indicates-required" style="display: none;"><span class="asterisk">*</span> indicates required</div>
-              <div class="mc-field-group">
-                <label for="mce-EMAIL" style="display: none;">Email Address <span class="asterisk">*</span></label>
-                <input type="email" name="EMAIL" class="required email" id="mce-EMAIL" required="" value="" placeholder="Enter your email">
-                <span id="mce-EMAIL-HELPERTEXT" class="helper_text" style="display: none;">Required Field</span>
-              </div>
-              <div hidden=""><input type="hidden" name="tags" value="1960777"></div>
-              <div id="mce-responses" class="clear">
-                <div class="response" id="mce-error-response" style="display: none;"></div>
-                <div class="response" id="mce-success-response" style="display: none;"></div>
-              </div>
-              <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_3e07b07e47945e180c24bb09d_5a31726d25" tabindex="-1" value=""></div>
-              <div class="clear"><input type="submit" name="subscribe" id="mc-embedded-subscribe" class="button" value="Subscribe"></div>
-            </div>
-          </form>
+      <form id="subscribe-form" class="newsletter-form">
+        <div class="form-row">
+          <div class="field-group">
+            <input type="email" id="subscribe-email" required placeholder="Enter your email">
+          </div>
+          <div class="submit-group">
+            <input type="submit" value="Subscribe">
+          </div>
+          <div class="form-message" id="form-message"></div>
         </div>
-      </div>
+      </form>
     </div>
 
     <div class="newsletter-divider"></div>
@@ -713,8 +676,37 @@
   </div>
 
   <script>
-    // Set copyright year
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    document.getElementById('subscribe-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('subscribe-email').value.trim();
+      const messageEl = document.getElementById('form-message');
+      const submitBtn = this.querySelector('input[type="submit"]');
+
+      submitBtn.disabled = true;
+      messageEl.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/save-emails', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          messageEl.innerHTML = '<span class="form-success">You\'re subscribed! Thank you.</span>';
+          this.reset();
+        } else {
+          messageEl.innerHTML = `<span class="form-error">${data.error || 'Something went wrong. Please try again.'}</span>`;
+        }
+      } catch {
+        messageEl.innerHTML = '<span class="form-error">Something went wrong. Please try again.</span>';
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
 
     function toggleBio() {
       const bioFull = document.querySelector('.bio-full');
